@@ -247,7 +247,7 @@ def update_progress_bar(progress):
 
 def start_update():
     selected_version = version_var.get()
-    update(selected_version)
+    # update(selected_version)
     try:
         update(selected_version)
     except Exception as e:
