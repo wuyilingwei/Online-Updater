@@ -109,21 +109,38 @@ def update(target_remote_version: str):
     global package, is_force_update  # 声明 package 和 is_force_update 为全局变量
     update_type = get_update_type(target_remote_version)
     logger.info(f"Updating to {target_remote_version} with type {update_type}")
-    if update_type == 'incompatible' and not is_force_update:
-        logger.error(f"Trying to update to an incompatible version.")
-        if not yes_no_message("Force Update", "The server has declared this as a major update. Using the updater may result in errors. Do you still wish to proceed?"):
-            logger.warning(f"User canceled the force update.")
+    if update_type == 'incompatible':
+        if is_force_update:
+            logger.warning(f"Trying to update to an incompatible version.")
+            if not yes_no_message("Force Update", "The server has declared this as a disruptive update.\nUsing the updater may result in errors.\nDo you still wish to proceed?"):
+                logger.warning(f"User canceled the force update.")
+                return
+            logger.warning(f"User confirmed the force update.")
+        else:
+            logger.error(f"Trying to update to an incompatible version.")
+            messagebox.showerror("Incompatible Version", "The server has declared this as a disruptive update.\nPlease contact the author for further instructions.\nOr enable the force update option to proceed.")
             return
-        logger.warning(f"User confirmed the force update.")
-    if update_type == 'force' or is_force_update:
+    if update_type == 'force':
         logger.info(f"Update type force. Proceeding")
     if update_type == 'optional':
         logger.info(f"Update type optional. Proceeding")
     if update_type == 'recommand':
         logger.info(f"Update type recommand. Fixing")
-    if update_type == 'old' and not is_force_update:
-        logger.error(f"Update type old. Exiting")
-        return
+    if update_type == 'old':
+        if is_force_update:
+            logger.warning(f"Trying to update to an old version.")
+            if not yes_no_message("Force Update", "The server has declared this as an old version.\nDo you still wish to proceed?"):
+                logger.warning(f"User canceled the force update.")
+                return
+            logger.warning(f"User confirmed the force update.")
+        else:
+            logger.error(f"Trying to update to an old version.")
+            messagebox.showerror("Old Version", "The server has declared this as an old version.\nPlease contact the author for further instructions.\nOr enable the force update option to proceed.")
+            return
+    if update_type == 'recommand':
+        if not confirm_message("Fix Version", "The server has declared this as the using version.\nDo you want to fix it?"):
+            logger.warning(f"User canceled the fix version.")
+            return
     update_URL = f"{REMOTE_URL}/{target_remote_version}"
     update_package = toml.loads(requests.get(f"{update_URL}/package.toml").text)
 
@@ -155,7 +172,8 @@ def update(target_remote_version: str):
             continue
         elif action == 'download':
             match_found = False
-            if 'files' in package:
+            if ('files' in package
+                and not (is_force_update or update_type == 'recommand')):
                 for local_key, local in package['files'].items():
                     if file['path'] == local['path']:
                         logger.info(f"Processing {file['path']}")
@@ -211,14 +229,12 @@ def yes_no_message(title: str, message: str) -> bool:
 def confirm_message(title: str, message: str) -> bool:
     return messagebox.askokcancel(title, message)
 
-
 def update_progress_bar(progress):
     progress_var.set(progress)
     root.update_idletasks()
 
 def start_update():
     selected_version = version_var.get()
-    update(selected_version)
     try:
         update(selected_version)
     except Exception as e:
@@ -276,6 +292,7 @@ def on_version_change(*args):
 def on_force_update_change():
     global is_force_update
     is_force_update = force_update_var.get()
+    logger.info(f"Force update: {is_force_update}")
     refresh_available_versions()
 
 
@@ -308,12 +325,12 @@ remote_frame = tk.LabelFrame(root, text="Remote Versions", relief=tk.RIDGE, bord
 remote_frame.place(x=10, y=210, width=380, height=120)
 
 # 显示远程最新版本
-remote_version_label = tk.Label(remote_frame, text=f"Recommand Version: {remote_recommand}", font=("Helvetica", 10, "bold"))
+remote_version_label = tk.Label(remote_frame, text=f"Recommand: {remote_recommand}", font=("Helvetica", 10, "bold"))
 remote_version_label.place(x=0, y=0)
 
 # 提示文本
 update_type_label = tk.Label(remote_frame, text="Current Status:", font=("Helvetica", 10, "bold"))
-update_type_label.place(x=190, y=0)
+update_type_label.place(x=180, y=0)
 
 # 显示更新状态
 update_status_label = tk.Label(remote_frame, text=f"{default_update_type}", fg=get_update_type_color(default_update_type), font=("Helvetica", 10, "bold"))
