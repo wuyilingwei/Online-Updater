@@ -93,5 +93,6 @@ At the end, c.txt will be opened. Of course, you can also replace it with any ba
 
  - dir is an optional parameter used to indicate that the local path is different from the server. Otherwise, path will be used as the actual local path.
  - action is an optional parameter used to specify other actions (such as deletion). The default value is download.
+ - version is a required parameter, which represents which version of this file this is. If the version is larger than the previous one, the file will be updated, otherwise it will be ignored.
  - The default path is the same as the updater path, but the keywords !document_dir!, !desktop_dir! and !download_dir! can be used to access the current user's Documents, Desktop and Downloads folders
  - The command in extra is also an optional parameter, which is used to open the file here after completion.
