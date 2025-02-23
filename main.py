@@ -142,7 +142,18 @@ def update(target_remote_version: str):
             logger.warning(f"User canceled the fix version.")
             return
     update_URL = f"{REMOTE_URL}/{target_remote_version}"
-    update_package = toml.loads(requests.get(f"{update_URL}/package.toml").text)
+    response = requests.get(f"{update_URL}/package.toml")
+    if response.status_code != 200:
+        logger.error(f"Failed to download package.toml. Status code: {response.status_code}")
+        messagebox.showerror("Download Error", f"Failed to download package.toml. Status code: {response.status_code}")
+        return
+    try:
+        package_text = response.text.replace("\\", "\\\\")
+        update_package = toml.loads(package_text)
+    except toml.TomlDecodeError as e:
+        logger.error(f"Failed to parse package.toml. Error: {e}")
+        messagebox.showerror("Parse Error", f"Failed to parse package.toml. Error: {e}")
+        return
 
     required_program_version = update_package['common'].get('program', '0.0.0')
     if compare_versions(required_program_version, PROGRAM_VERSION) > 0:
@@ -157,6 +168,7 @@ def update(target_remote_version: str):
     for file_key, file in update_package.get('files', {}).items():
         action = file.get('action', 'download')
         path = file.get('dir', file['path'])
+        url_path = path.replace("\\", "/")
         if path.startswith('!'):
             path = path.replace('!documents!', document_dir)
             path = path.replace('!desktop!', desktop_dir)
@@ -184,7 +196,7 @@ def update(target_remote_version: str):
             if match_found:
                 continue
             logger.info(f"No match found for {file['path']}. Downloading")
-            r = requests.get(f"{update_URL}/{file['path']}")
+            r = requests.get(f"{update_URL}/{url_path}")
             if r.status_code != 200:
                 logger.error(f"Failed to download {file['path']}. Status code: {r.status_code}")
                 continue
@@ -235,6 +247,7 @@ def update_progress_bar(progress):
 
 def start_update():
     selected_version = version_var.get()
+    update(selected_version)
     try:
         update(selected_version)
     except Exception as e:
