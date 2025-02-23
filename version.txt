@@ -5,7 +5,7 @@
 VSVersionInfo(
     ffi=FixedFileInfo(
         filevers=(1, 0, 0, 0),  # 文件版本号
-        prodvers=(1, 0, 0, 0),  # 产品版本号
+        prodvers=(1, 0, 1, 0),  # 产品版本号
         mask=0x3f,
         flags=0x0,
         OS=0x40004,
@@ -26,7 +26,7 @@ VSVersionInfo(
                         StringStruct(u'LegalCopyright', u'GPL-3.0'),  # 版权
                         StringStruct(u'OriginalFilename', u'Updater.exe'),  # 原始文件名
                         StringStruct(u'ProductName', u'Updater'),  # 产品名称
-                        StringStruct(u'ProductVersion', u'1.0.0.0')  # 产品版本
+                        StringStruct(u'ProductVersion', u'1.0.1.0')  # 产品版本
                     ]
                 )
             ]

@@ -8,7 +8,7 @@ import requests
 import subprocess
 import webbrowser
 
-PROGRAM_VERSION = "1.0.0"
+PROGRAM_VERSION = "1.0.1"
 
 root = tk.Tk()
 # 创建主窗口
