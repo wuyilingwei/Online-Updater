@@ -2,11 +2,11 @@ import toml
 import os
 import sys
 import tkinter as tk
-from tkinter import ttk, messagebox  # 添加导入 messagebox 模块
+from tkinter import ttk, messagebox
 import logging
 import requests
-import subprocess  # 添加导入 subprocess 模块
-import webbrowser  # 添加导入 webbrowser 模块
+import subprocess
+import webbrowser
 
 PROGRAM_VERSION = "1.0.0"
 
