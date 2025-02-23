@@ -1,0 +1,4 @@
+[common]
+version = "1.0.0"
+remote = "https://raw.githubusercontent.com/wuyilingwei/file/main/mc4"
+program = "1.0.0"
