@@ -59,7 +59,7 @@ versions = ["1.0.0", "1.0.1", "1.1.0 Beta"]
 Note that the version number must be in the format x.y.z and if there is a subsequent tag (such as Beta), there must be a space.
 
  - A change of z means that this is an optional update and is compatible with both previous and next versions;
- - A change of y means that this is a destructive update and needs to be updated; 
+ - A change of y means that this is a important update and needs to be updated; 
  - A change of x means that this is a disruptive update and it is not recommended to use the updater but to re-download directly (but users can still request a forced update attempt)
 
 Normally, only switching to newer versions is allowed. However, clients can use the Force Update checkbox to enable updating to any offered version.
